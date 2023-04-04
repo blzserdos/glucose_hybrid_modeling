@@ -15,8 +15,6 @@ import json
 import multiprocessing
 import csv
 
-timestr = time.strftime("%Y%m%d")
-
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -109,23 +107,23 @@ def ML_nested(X, Y, prefix='ms'):
         nested_indices_.update({'tp '+str(ix): indices_all_})
 
     json_dump = json.dumps(nested_preds, cls=NumpyEncoder)
-    with open(timestr+'_'+prefix+'_preds', 'w') as f:
+    with open(prefix+'_preds', 'w') as f:
         json.dump(json_dump, f)
     
     json_dump = json.dumps(nested_y, cls=NumpyEncoder)
-    with open(timestr+'_'+prefix+'_y', 'w') as f:
+    with open(prefix+'_y', 'w') as f:
         json.dump(json_dump, f)
 
     json_dump = json.dumps(nested_preds_, cls=NumpyEncoder)
-    with open(timestr+'_'+prefix+'_preds_dict', 'w') as f:
+    with open(prefix+'_preds_dict', 'w') as f:
         json.dump(json_dump, f)
     
     json_dump = json.dumps(nested_y_, cls=NumpyEncoder)
-    with open(timestr+'_'+prefix+'_y_dict', 'w') as f:
+    with open(prefix+'_y_dict', 'w') as f:
         json.dump(json_dump, f)
 
     json_dump = json.dumps(nested_indices_, cls=NumpyEncoder)
-    with open(timestr+'_'+prefix+'_indices_dict', 'w') as f:
+    with open(prefix+'_indices_dict', 'w') as f:
         json.dump(json_dump, f)
 
     features = pd.DataFrame(feats_all)
