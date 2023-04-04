@@ -7,6 +7,7 @@ import xgboost as xgb
 from sklearn.utils import shuffle
 from sklearn.model_selection import KFold, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.pipeline import Pipeline
 import joblib
 import time
@@ -53,4 +54,36 @@ X = pd.DataFrame(np.random.rand(10,5)) # random matrix of predictors with 10 ind
 Y = pd.DataFrame(np.random.rand(10,1)) # random vector of targets
 ML_nested(X, Y, prefix='TEST') # test case with random predictors and target
 
+# process saved results
 
+path = ''
+files = ['TEST_preds_dict','TEST_indices_dict']
+names = ['pred', 'idxs']
+
+d = {}
+for ix_, f in enumerate(files):
+    d[names[ix_]] = load_res(path, f)
+    
+r2 = np.empty((5,1))
+mse = np.empty((5,1))
+preds = np.empty((20,1))
+
+for i, (key, value) in enumerate(d['idxs'].item().items()):
+    nan_mask = ~np.isnan(Y[:,i])
+    preds_ = np.empty(nan_mask[nan_mask == True].shape)
+    print(preds_.shape)
+    for j, (key_, value_) in enumerate(d['idxs'].item()[key].items()):
+        y = Y[nan_mask, i] # OGTT.values[~np.isnan(OGTT.values[:,i]), i]
+        y = y[d['idxs'].item()[key][key_]]
+        
+        #  sim_ = sim[~nan_mask, i]
+        #  sim_ = sim_[d['idxs'].item()[key][key_]]
+        
+        y_p = d['pred'].item()[key][key_] # + sim_
+        r2[j,i] = r2_score(y, y_p) 
+        mse[j,i] = mean_squared_error(y, y_p)
+        indices = np.asarray(d['idxs'].item()[key][key_])
+
+        ppreds_[indices] = y_p
+        
+    preds[nan_mask, i] = preds_
