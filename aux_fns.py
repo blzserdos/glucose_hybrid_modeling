@@ -22,6 +22,11 @@ class NumpyEncoder(json.JSONEncoder):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+    
+def load_res(p, f):
+    with open(str(p)+str(f), 'r') as JSON:
+        json_dict = json.load(JSON)
+    return np.asarray(json.loads(json_dict))
 
 def my_cross_val_predict(X, Y, my_kfold, estimators):
     x_test_all = np.ndarray([0, X.shape[1]])
